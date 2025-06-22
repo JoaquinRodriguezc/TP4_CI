@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { InventarioService } from "./InventarioService";
 
-describe("Index", () => {
+describe("InventarioService", () => {
   const inventarioService = new InventarioService();
   it("should be defined", () => {
     expect(inventarioService).toBeDefined();
