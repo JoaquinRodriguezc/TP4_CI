@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Install dependencies
-        run: npm run install
+        run: npm install
 
       - name: Compile TypeScript
         run: npm run ts
