@@ -17,7 +17,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm run installl
+        run: npm run install
 
       - name: Compile TypeScript
         run: npm run ts
