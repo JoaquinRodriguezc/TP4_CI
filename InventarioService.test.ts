@@ -209,6 +209,42 @@ describe("InventarioService", () => {
     const resultado = inventarioService.detectarInactividadCronica(movimientos, 30);
     expect(resultado).toEqual(['Articulo D']);
   });
+
+  //-------------------------------------------------------------------------------------
+  // Test 1: Calcula valor total de inventario correctamente con varios ítems
+  it('calcula el valor total de inventario correctamente', () => {
+    const inventario = [
+      { cantidad: 10, costoUnidad: 5 },
+      { cantidad: 3, costoUnidad: 20 },
+      { cantidad: 7, costoUnidad: 2.5 }
+    ];
+    const resultado = inventarioService.calcularValorTotalInventario(inventario);
+    // 10*5 + 3*20 + 7*2.5 = 50 + 60 + 17.5 = 127.5
+    expect(resultado).toBeCloseTo(127.5);
+  });
+
+  // Test 2: Lanza error si algún ítem tiene cantidad negativa
+  it('lanza error si algún ítem tiene cantidad negativa', () => {
+    const inventario = [
+      { cantidad: 5, costoUnidad: 10 },
+      { cantidad: -2, costoUnidad: 15 }
+    ];
+    expect(() => inventarioService.calcularValorTotalInventario(inventario)).toThrow(
+      "Cada ítem debe tener cantidad y costoUnidad numéricos y no negativos"
+    );
+  });
+
+  // Test 3: Lanza error si el argumento no es un arreglo
+  it('lanza error si el inventario no es un arreglo', () => {
+    // @ts-expect-error: probando error con tipo incorrecto
+    expect(() => inventarioService.calcularValorTotalInventario(null)).toThrow(
+      "El inventario debe ser un arreglo"
+    );
+    // @ts-expect-error: probando error con tipo incorrecto
+    expect(() => inventarioService.calcularValorTotalInventario(123)).toThrow(
+      "El inventario debe ser un arreglo"
+    );
+  });
 });
 
 

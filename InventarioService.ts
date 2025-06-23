@@ -207,4 +207,27 @@ public detectarInactividadCronica(
     )
     .map(art => art.nombre);
 }
+
+
+//================== calcular valor total de inventario ======================
+
+public calcularValorTotalInventario(
+  inventario: { cantidad: number; costoUnidad: number }[]
+): number {
+  if (!Array.isArray(inventario)) {
+    throw new Error("El inventario debe ser un arreglo");
+  }
+  return inventario.reduce((total, item) => {
+    if (
+      typeof item.cantidad !== "number" ||
+      typeof item.costoUnidad !== "number" ||
+      item.cantidad < 0 ||
+      item.costoUnidad < 0
+    ) {
+      throw new Error("Cada ítem debe tener cantidad y costoUnidad numéricos y no negativos");
+    }
+    return total + item.cantidad * item.costoUnidad;
+  }, 0);
+}
+
 }
