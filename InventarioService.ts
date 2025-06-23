@@ -59,6 +59,7 @@ export class InventarioService {
     return demanda * costoUnidad + (inventarioMaximo / 2) * costoMantenimiento;
   }
 
+  // Calcula el stock de seguridad (modelo LOTE_FIJO y TIEMPO_FIJO)
   public calcularStockSeguridadConstante(
     nivelServicio: number,
     variacionDemanda: number,
