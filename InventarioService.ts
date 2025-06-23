@@ -188,5 +188,23 @@ export class InventarioService {
 
   return inventarioProyectado;
 }
+// ================== Deteccion Inactividad ======================
 
+public detectarInactividadCronica(
+  movimientos: {
+    nombre: string;
+    fechasUltimosMovimientos: Date[];
+  }[],
+  umbralDias: number
+): string[] {
+  const ahora = new Date();
+
+  return movimientos
+    .filter(art => 
+      art.fechasUltimosMovimientos.every(fecha => 
+        (ahora.getTime() - fecha.getTime()) / (1000 * 60 * 60 * 24) > umbralDias
+      )
+    )
+    .map(art => art.nombre);
+}
 }

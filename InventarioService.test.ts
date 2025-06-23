@@ -178,6 +178,37 @@ describe("InventarioService", () => {
     const resultado = inventarioService.simularInventario(15, 10, 3, []);
     expect(resultado).toEqual([5, 0, 0]); // Se queda sin stock el segundo día
   });
+  // ===================== TESTS para detectarInactividadCronica =====================
+  it('Detecta artículos completamente inactivos', () => {
+    const movimientos = [
+      { nombre: 'Articulo A', fechasUltimosMovimientos: [new Date('2020-01-01')] },
+      { nombre: 'Articulo B', fechasUltimosMovimientos: [new Date('2023-01-01')] }
+    ];
+    const resultado = inventarioService.detectarInactividadCronica(movimientos, 30);
+    expect(resultado).toContain('Articulo A');
+    expect(resultado).toContain('Articulo B');
+  });
+
+  it('Detecta artículos activos (no inactivos)', () => {
+    const hoy = new Date();
+    const movimientos = [
+      { nombre: 'Articulo C', fechasUltimosMovimientos: [hoy] }
+    ];
+    const resultado = inventarioService.detectarInactividadCronica(movimientos, 30);
+    expect(resultado).toEqual([]);
+  });
+
+  it('Artículo con mezcla de fechas pero todas superan el umbral', () => {
+    const movimientos = [
+      { nombre: 'Articulo D', fechasUltimosMovimientos: [
+        new Date('2025-01-01'),
+        new Date('2025-02-01'),
+        new Date('2025-03-01')
+      ]}
+    ];
+    const resultado = inventarioService.detectarInactividadCronica(movimientos, 30);
+    expect(resultado).toEqual(['Articulo D']);
+  });
 });
 
 
