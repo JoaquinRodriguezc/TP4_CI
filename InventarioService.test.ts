@@ -83,7 +83,7 @@ describe("InventarioService", () => {
     const result = inventarioService.debeReponerse(articulo, new Date("2025-06-23"), false);
     expect(result).toBe(true);
   });
-  
+
   //-------------------------------------------------------------------------------------
   it("debe calcular correctamente el stock de seguridad para nivel de servicio 0.95", () => {
     const result = inventarioService.calcularStockSeguridadConstante(
@@ -95,7 +95,7 @@ describe("InventarioService", () => {
     // z = 1.6449, sqrt(4+1) = sqrt(5) ≈ 2.2361 → 1.6449 * 20 * 2.2361 ≈ 73.6 → ceil = 74
     expect(result).toBe(74);
   });
-  
+
   //-------------------------------------------------------------------------------------
   it("debe retornar NaN si se pasa un nivel de servicio inválido", () => {
     const result = inventarioService.calcularStockSeguridadConstante(
@@ -106,9 +106,9 @@ describe("InventarioService", () => {
     );
     expect(result).toBeNaN(); // z será undefined → multiplicación con undefined da NaN
   });
-  
+
   //-------------------------------------------------------------------------------------
-      it("debe calcular correctamente el stock cuando solo hay demora del proveedor (tiempoRevision = 0)", () => {
+  it("debe calcular correctamente el stock cuando solo hay demora del proveedor (tiempoRevision = 0)", () => {
     const result = inventarioService.calcularStockSeguridadConstante(
       0.98,   // nivelServicio
       10,     // variacionDemanda
@@ -117,7 +117,7 @@ describe("InventarioService", () => {
     );
     // z = 2.0537, sqrt(4) = 2 → 2.0537 * 10 * 2 = 41.074 → ceil = 42
     expect(result).toBe(42);
-  }); // <--- ESTA llave faltaba
+  });
   //-------------------------------------------------------------------------------------
   it("lanza error si algún parámetro numérico es inválido (NaN o string)", async () => {
     await expect(
@@ -133,18 +133,32 @@ describe("InventarioService", () => {
     ).rejects.toThrow("Todos los parámetros deben ser numéricos");
   });
 
-    //-------------------------------------------------------------------------------------
-    it("lanza error si días laborables son 0 o negativos", async () => {
-      await expect(
-        inventarioService.calcularPuntoPedido(1000, 5, 5, { diasLaborables: 0 })
-      ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
+  //-------------------------------------------------------------------------------------
+  it("lanza error si días laborables son 0 o negativos", async () => {
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, 5, 5, { diasLaborables: 0 })
+    ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
 
-      await expect(
-        inventarioService.calcularPuntoPedido(1000, 5, 5, {
-          diasLaborables: -100,
-        })
-      ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
-    });
-    //-------------------------------------------------------------------------------------
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, 5, 5, {
+        diasLaborables: -100,
+      })
+    ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
+  });
+  //-------------------------------------------------------------------------------------
+  it('debería clasificar correctamente un producto como A, B o C', () => {
+    expect(inventarioService.clasificarABC({ nombre: 'ProdA', demandaAnual: 200, costoUnidad: 6 })).toBe('A'); // 1200
+    expect(inventarioService.clasificarABC({ nombre: 'ProdB', demandaAnual: 100, costoUnidad: 6 })).toBe('B'); // 600
+    expect(inventarioService.clasificarABC({ nombre: 'ProdC', demandaAnual: 10, costoUnidad: 20 })).toBe('C'); // 200
+  });
+  //-------------------------------------------------------------------------------------
+  it('debería lanzar excepción si el producto es nulo o indefinido', () => {
+    expect(() => inventarioService.clasificarABC(undefined as any)).toThrow('El producto no puede ser nulo o indefinido');
+  });
+  //-------------------------------------------------------------------------------------
+  it('debería lanzar excepción si demandaAnual o costoUnidad son menores o iguales a 0', () => {
+    expect(() => inventarioService.clasificarABC({ nombre: 'ProdX', demandaAnual: 0, costoUnidad: 10 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
+    expect(() => inventarioService.clasificarABC({ nombre: 'ProdY', demandaAnual: 10, costoUnidad: 0 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
+  });
 });
 
