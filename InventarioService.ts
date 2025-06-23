@@ -50,6 +50,7 @@ export class InventarioService {
       (loteOptimo / 2) * costoMantenimiento
     );
   }
+
   async calcularCostoTotalTiempoFijo(
     demanda: number,
     costoUnidad: number,
@@ -80,5 +81,23 @@ export class InventarioService {
       Math.sqrt(demoraEntregaProveedor + (tiempoRevision || 0));
 
     return Math.ceil(stockSeguridad);
+  }
+
+  // ================== REPOSICIÓN ======================
+
+  public debeReponerse(
+    articulo: { fechaUltimaReposicion: Date | null; intervaloDias: number },
+    fechaActual: Date,
+    existeOrdenCompraActiva: boolean
+  ): boolean {
+    if (existeOrdenCompraActiva) return false;
+    if (!articulo.fechaUltimaReposicion) return true;
+
+    const diasDesdeUltima = Math.floor(
+      (fechaActual.getTime() - articulo.fechaUltimaReposicion.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    return diasDesdeUltima >= articulo.intervaloDias;
   }
 }
