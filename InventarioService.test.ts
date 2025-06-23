@@ -81,5 +81,32 @@ describe("InventarioService", () => {
     );
     // z = 2.0537, sqrt(4) = 2 → 2.0537 * 10 * 2 = 41.074 → ceil = 42
     expect(result).toBe(42);
+
+    //calcularPuntoPedido
+    //-------------------------------------------------------------------------------------
+  it("lanza error si algún parámetro numérico es inválido (NaN o string)", async () => {
+    await expect(
+      inventarioService.calcularPuntoPedido("1000" as any, 5, 5)
+    ).rejects.toThrow("Todos los parámetros deben ser numéricos");
+
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, NaN, 5)
+    ).rejects.toThrow("Todos los parámetros deben ser numéricos");
+
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, 5, undefined as any)
+    ).rejects.toThrow("Todos los parámetros deben ser numéricos");
+  });
+  //-------------------------------------------------------------------------------------
+  it("lanza error si días laborables son 0 o negativos", async () => {
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, 5, 5, { diasLaborables: 0 })
+    ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
+
+    await expect(
+      inventarioService.calcularPuntoPedido(1000, 5, 5, { diasLaborables: -100 })
+    ).rejects.toThrow("La cantidad de días laborables debe ser mayor a 0");
+  });
+  //-------------------------------------------------------------------------------------
   });
 });

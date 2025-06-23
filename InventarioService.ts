@@ -4,18 +4,56 @@ export class InventarioService {
   // ================== CÁLCULOS DE INVENTARIO ======================
 
   // Calcula el Punto de Pedido para un artículo (modelo LOTE_FIJO)
+  // Calcula el Punto de Pedido para un artículo (modelo LOTE_FIJO)
   async calcularPuntoPedido(
     demandaAnual: number,
     demoraEntregaProveedor: number,
-    stockSeguridad: number
+    stockSeguridad: number,
+    opciones?: {
+      diasLaborables?: number; // Por defecto 365
+      redondearResultado?: boolean; // Por defecto false
+      desviacionDemandaDiaria?: number; // Opcional, para ajustar demanda
+    }
   ): Promise<number> {
+    // Validaciones
+    if (
+      [demandaAnual, demoraEntregaProveedor, stockSeguridad].some(
+        (v) => typeof v !== "number" || Number.isNaN(v)
+      )
+    ) {
+      throw new Error("Todos los parámetros deben ser numéricos");
+    }
+
     if (demoraEntregaProveedor <= 0) {
       throw new Error(
         "Demora de entrega de proveedor no puede ser menor o igual a 0"
       );
     }
-    const demandaDiaria = demandaAnual / 365;
-    return demandaDiaria * demoraEntregaProveedor + stockSeguridad;
+
+    if (demandaAnual < 0 || stockSeguridad < 0) {
+      throw new Error(
+        "Demanda anual y stock de seguridad no pueden ser negativos"
+      );
+    }
+
+    const dias = opciones?.diasLaborables ?? 365;
+    if (dias <= 0) {
+      throw new Error("La cantidad de días laborables debe ser mayor a 0");
+    }
+
+    let demandaDiaria = demandaAnual / dias;
+
+    if (opciones?.desviacionDemandaDiaria) {
+      demandaDiaria += opciones.desviacionDemandaDiaria;
+    }
+
+    let resultado = demandaDiaria * demoraEntregaProveedor + stockSeguridad;
+
+    if (opciones?.redondearResultado) {
+      resultado = Math.ceil(resultado);
+    }
+
+    return resultado;
   }
 
   // Calcula el Lote Óptimo (modelo LOTE_FIJO)
