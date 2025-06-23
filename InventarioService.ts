@@ -1,5 +1,5 @@
 export class InventarioService {
-  constructor() {}
+  constructor() { }
 
   // ================== CÁLCULOS DE INVENTARIO ======================
 
@@ -134,9 +134,30 @@ export class InventarioService {
 
     const diasDesdeUltima = Math.floor(
       (fechaActual.getTime() - articulo.fechaUltimaReposicion.getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     return diasDesdeUltima >= articulo.intervaloDias;
+  }
+
+  public clasificarABC(
+    producto: { nombre: string; demandaAnual: number; costoUnidad: number },
+    umbralA: number = 1000,
+    umbralB: number = 500
+  ): 'A' | 'B' | 'C' {
+    if (!producto) {
+      throw new Error("El producto no puede ser nulo o indefinido");
+    }
+    if (producto.demandaAnual <= 0 || producto.costoUnidad <= 0) {
+      throw new Error("El producto debe tener demandaAnual y costoUnidad mayores a 0");
+    }
+    const valorConsumoAnual = producto.demandaAnual * producto.costoUnidad;
+    if (valorConsumoAnual >= umbralA) {
+      return 'A';
+    } else if (valorConsumoAnual >= umbralB) {
+      return 'B';
+    } else {
+      return 'C';
+    }
   }
 }
