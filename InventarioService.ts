@@ -160,4 +160,33 @@ export class InventarioService {
       return 'C';
     }
   }
+
+// ================== Simulacion Inventario ======================
+
+  public simularInventario(
+  inventarioInicial: number,
+  demandaDiaria: number,
+  diasProyeccion: number,
+  reposiciones: { dia: number; cantidad: number }[]
+): number[] {
+  if (inventarioInicial < 0 || demandaDiaria < 0 || diasProyeccion <= 0) {
+    throw new Error("Parámetros inválidos");
+  }
+
+  const inventarioProyectado: number[] = [];
+  let inventario = inventarioInicial;
+
+  for (let dia = 1; dia <= diasProyeccion; dia++) {
+    inventario -= demandaDiaria;
+    const reposicionHoy = reposiciones.find(r => r.dia === dia);
+    if (reposicionHoy) {
+      inventario += reposicionHoy.cantidad;
+    }
+    inventario = Math.max(0, inventario); // No permitimos inventario negativo
+    inventarioProyectado.push(inventario);
+  }
+
+  return inventarioProyectado;
+}
+
 }
