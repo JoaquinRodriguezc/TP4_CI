@@ -229,5 +229,6 @@ public calcularValorTotalInventario(
     return total + item.cantidad * item.costoUnidad;
   }, 0);
 }
+//
 
 }
