@@ -160,5 +160,24 @@ describe("InventarioService", () => {
     expect(() => inventarioService.clasificarABC({ nombre: 'ProdX', demandaAnual: 0, costoUnidad: 10 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
     expect(() => inventarioService.clasificarABC({ nombre: 'ProdY', demandaAnual: 10, costoUnidad: 0 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
   });
+  // ===================== TESTS para simularInventario =====================
+  it('Simulación básica sin reposiciones', () => {
+    const resultado = inventarioService.simularInventario(100, 10, 5, []);
+    expect(resultado).toEqual([90, 80, 70, 60, 50]);
+  });
+
+  it('Simulación con reposiciones en algunos días', () => {
+    const resultado = inventarioService.simularInventario(50, 10, 4, [
+      { dia: 2, cantidad: 20 },
+      { dia: 4, cantidad: 10 }
+    ]);
+    expect(resultado).toEqual([40, 50, 40, 40]);
+  });
+
+  it('Inventario nunca puede ser negativo', () => {
+    const resultado = inventarioService.simularInventario(15, 10, 3, []);
+    expect(resultado).toEqual([5, 0, 0]); // Se queda sin stock el segundo día
+  });
 });
+
 
