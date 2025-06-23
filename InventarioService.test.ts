@@ -26,6 +26,7 @@ describe("InventarioService", () => {
   });
 
   //-------------------------------------------------------------------------------------
+  //Testeos para el calculo del CGI
   it("debe calcular correctamente el Costo Total de Inventario (caso simple)", async () => {
     const result = await inventarioService.calcularCostoTotalLoteFijo(
       100,    // loteOptimo
