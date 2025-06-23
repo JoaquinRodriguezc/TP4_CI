@@ -55,5 +55,19 @@ describe("InventarioService", () => {
     expect(result).toBeCloseTo(19690.83, 2); // Usá 2 decimales para que sea más estricto
   });
   //-------------------------------------------------------------------------------------
+  it('debería clasificar correctamente un producto como A, B o C', () => {
+    expect(inventarioService.clasificarABC({ nombre: 'ProdA', demandaAnual: 200, costoUnidad: 6 })).toBe('A'); // 1200
+    expect(inventarioService.clasificarABC({ nombre: 'ProdB', demandaAnual: 100, costoUnidad: 6 })).toBe('B'); // 600
+    expect(inventarioService.clasificarABC({ nombre: 'ProdC', demandaAnual: 10, costoUnidad: 20 })).toBe('C'); // 200
+  });
+  //-------------------------------------------------------------------------------------
+  it('debería lanzar excepción si el producto es nulo o indefinido', () => {
+    expect(() => inventarioService.clasificarABC(undefined as any)).toThrow('El producto no puede ser nulo o indefinido');
+  });
+  //-------------------------------------------------------------------------------------
+  it('debería lanzar excepción si demandaAnual o costoUnidad son menores o iguales a 0', () => {
+    expect(() => inventarioService.clasificarABC({ nombre: 'ProdX', demandaAnual: 0, costoUnidad: 10 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
+    expect(() => inventarioService.clasificarABC({ nombre: 'ProdY', demandaAnual: 10, costoUnidad: 0 })).toThrow('El producto debe tener demandaAnual y costoUnidad mayores a 0');
+  });
 });
 
